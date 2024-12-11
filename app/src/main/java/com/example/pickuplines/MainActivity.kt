@@ -19,6 +19,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navigationView: NavigationView
     private lateinit var drawerImage: ImageView
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var adapter: TypeAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,7 +33,7 @@ class MainActivity : AppCompatActivity() {
         drawerImage = findViewById(R.id.drawer_image)
 
 
-        val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
+        recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         val typeList = listOf(
@@ -41,16 +43,23 @@ class MainActivity : AppCompatActivity() {
             TypeModel("Clever", R.drawable.clever, R.color.color4),
             TypeModel("Dirty", R.drawable.dirty, R.color.color5),
             TypeModel("Food", R.drawable.foodie, R.color.color6),
-            TypeModel("Chessy", R.drawable.chessy, R.color.color7),
+            TypeModel("Cheesy", R.drawable.chessy, R.color.color7),
             TypeModel("Funny", R.drawable.funny, R.color.color8),
             TypeModel("Romantic", R.drawable.romantic, R.color.color9),
             TypeModel("Sad", R.drawable.sad, R.color.color10),
-            TypeModel("Flirty", R.drawable.flirt, R.color.color11),
+            TypeModel("Flirty", R.drawable.flirt, R.color.color11)
         )
 
-        val adapter = TypeAdapter(this, typeList)
-        recyclerView.adapter = adapter
+        adapter = TypeAdapter(this, typeList) { category ->
+            val pickupLines = getPickupLinesForCategory(category)
+            if (pickupLines.isNotEmpty()) {
+                Toast.makeText(this, "Loaded ${pickupLines.size} lines for $category", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "No lines available for $category", Toast.LENGTH_SHORT).show()
+            }
+        }
 
+        recyclerView.adapter = adapter
 
         navigationView.setNavigationItemSelectedListener { item ->
             when (item.itemId) {
@@ -98,4 +107,22 @@ class MainActivity : AppCompatActivity() {
             drawerLayout.openDrawer(GravityCompat.START)
         }
     }
+
+    private fun getPickupLinesForCategory(category: String): List<PickupLine> {
+        return when (category) {
+            "Bad" -> PickupLinesData.badLines
+            "Love" -> PickupLinesData.loveLines
+            "Cute" -> PickupLinesData.cuteLines
+            "Clever" -> PickupLinesData.cleverLines
+            "Dirty" -> PickupLinesData.dirtyLines
+            "Food" -> PickupLinesData.foodLines
+            "Cheesy" -> PickupLinesData.cheesyLines
+            "Funny" -> PickupLinesData.funnyLines
+            "Romantic" -> PickupLinesData.romanticLines
+            "Sad" -> PickupLinesData.sadLines
+            "Flirty" -> PickupLinesData.flirtyLines
+            else -> emptyList()
+        }
+    }
+
 }
