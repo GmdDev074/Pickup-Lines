@@ -1,17 +1,19 @@
-package com.example.pickuplines
+package com.example.pickuplines.Activities
 
 import android.os.Bundle
-import android.view.MenuItem
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.pickuplines.DataClasses.PickupLine
+import com.example.pickuplines.DataClasses.PickupLinesData
+import com.example.pickuplines.R
+import com.example.pickuplines.Adapters.TypeAdapter
+import com.example.pickuplines.Models.TypeModel
 import com.google.android.material.navigation.NavigationView
 
 class MainActivity : AppCompatActivity() {

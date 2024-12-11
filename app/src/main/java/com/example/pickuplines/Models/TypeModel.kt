@@ -1,4 +1,4 @@
-package com.example.pickuplines
+package com.example.pickuplines.Models
 
 data class TypeModel(
     val typeName: String,

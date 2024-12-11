@@ -1,4 +1,4 @@
-package com.example.pickuplines
+package com.example.pickuplines.Adapters
 
 import android.content.Context
 import android.content.Intent
@@ -10,6 +10,9 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.example.pickuplines.Activities.PickupLineActivity
+import com.example.pickuplines.R
+import com.example.pickuplines.Models.TypeModel
 
 class TypeAdapter(
     private val context: Context,
