@@ -148,9 +148,15 @@ class LikedPickupLineAdapter(
 
     private fun unlikePickupLine(line: String, position: Int) {
         likedLines.removeAt(position)
+        val editor = sharedPreferences.edit()
+
+        val updatedLikedLines = likedLines.toSet()
+        editor.putStringSet("LikedLines", updatedLikedLines)
+        editor.apply()
         notifyItemRemoved(position)
         Toast.makeText(context, "Unliked: $line", Toast.LENGTH_SHORT).show()
     }
+
 
     private fun copyPickupLine(line: String) {
         val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
