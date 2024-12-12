@@ -1,6 +1,8 @@
 package com.example.pickuplines.Activities
 
 import android.os.Bundle
+import android.util.Log
+import android.view.View
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -14,6 +16,11 @@ import com.example.pickuplines.DataClasses.PickupLinesData
 import com.example.pickuplines.R
 import com.example.pickuplines.Adapters.TypeAdapter
 import com.example.pickuplines.Models.TypeModel
+import com.facebook.shimmer.ShimmerFrameLayout
+import com.google.android.gms.ads.AdListener
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdView
+import com.google.android.gms.ads.LoadAdError
 import com.google.android.material.navigation.NavigationView
 
 class MainActivity : AppCompatActivity() {
@@ -23,6 +30,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var drawerImage: ImageView
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: TypeAdapter
+    private lateinit var adView: AdView
+    private lateinit var shimmerFrameLayout: ShimmerFrameLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,7 +42,11 @@ class MainActivity : AppCompatActivity() {
         drawerLayout = findViewById(R.id.drawer_layout)
         navigationView = findViewById(R.id.nav_view)
         drawerImage = findViewById(R.id.drawer_image)
+        shimmerFrameLayout = findViewById(R.id.shimmer_ad_container)
+        adView = findViewById(R.id.adView)
 
+        shimmerFrameLayout.startShimmer()
+        setupAdView()
 
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -49,7 +62,9 @@ class MainActivity : AppCompatActivity() {
             TypeModel("Funny", R.drawable.funny, R.color.color8),
             TypeModel("Romantic", R.drawable.romantic, R.color.color9),
             TypeModel("Sad", R.drawable.sad, R.color.color10),
-            TypeModel("Flirty", R.drawable.flirt, R.color.color11)
+            TypeModel("Flirty", R.drawable.flirt, R.color.color11),
+            TypeModel("Classic", R.drawable.classic, R.color.color12),
+            TypeModel("Compliment", R.drawable.compliment, R.color.color13)
         )
 
         adapter = TypeAdapter(this, typeList) { category ->
@@ -125,6 +140,38 @@ class MainActivity : AppCompatActivity() {
             "Flirty" -> PickupLinesData.flirtyLines
             else -> emptyList()
         }
+    }
+
+
+    private fun setupAdView() {
+        val adRequest = AdRequest.Builder().build()
+
+        adView.adListener = object : AdListener() {
+            override fun onAdLoaded() {
+                shimmerFrameLayout.stopShimmer()
+                shimmerFrameLayout.visibility = View.GONE
+                adView.visibility = View.VISIBLE
+                Log.d("AdStatus", "Ad loaded successfully.")
+            }
+
+            override fun onAdFailedToLoad(adError: LoadAdError) {
+                shimmerFrameLayout.stopShimmer()
+                shimmerFrameLayout.visibility = View.GONE
+                Log.e("AdStatus", "Ad failed to load: ${adError.message}")
+                adView.loadAd(adRequest)
+            }
+        }
+        adView.loadAd(adRequest)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        shimmerFrameLayout.stopShimmer()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        shimmerFrameLayout.startShimmer()
     }
 
 }

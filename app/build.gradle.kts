@@ -47,5 +47,8 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 
     implementation("com.airbnb.android:lottie:6.1.0")
+    implementation("com.google.android.gms:play-services-ads:22.3.0")
+    implementation("com.facebook.shimmer:shimmer:0.5.0")
+
 
 }

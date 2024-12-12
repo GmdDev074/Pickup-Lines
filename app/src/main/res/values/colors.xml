@@ -3,6 +3,9 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
+    <color name="shimmer_placeholder_color">#B49F9F</color>
+
+
     <color name="color1">#9C27B0</color>
     <color name="color2">#673AB7</color>
     <color name="color3">#3F51B5</color>
@@ -14,4 +17,6 @@
     <color name="color9">#FFEB3B</color>
     <color name="color10">#FF9800</color>
     <color name="color11">#FF5722</color>
+    <color name="color12">#7D8BEB</color>
+    <color name="color13">#4C8E88</color>
 </resources>
