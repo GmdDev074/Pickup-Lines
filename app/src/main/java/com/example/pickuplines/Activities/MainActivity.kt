@@ -1,5 +1,6 @@
 package com.example.pickuplines.Activities
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -31,6 +32,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: TypeAdapter
     private lateinit var adView: AdView
+    private lateinit var starImageView: ImageView
     private lateinit var shimmerFrameLayout: ShimmerFrameLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,6 +44,8 @@ class MainActivity : AppCompatActivity() {
         drawerLayout = findViewById(R.id.drawer_layout)
         navigationView = findViewById(R.id.nav_view)
         drawerImage = findViewById(R.id.drawer_image)
+        starImageView = findViewById(R.id.star)
+
         shimmerFrameLayout = findViewById(R.id.shimmer_ad_container)
         adView = findViewById(R.id.adView)
 
@@ -50,6 +54,11 @@ class MainActivity : AppCompatActivity() {
 
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
+
+        starImageView.setOnClickListener {
+            val intent = Intent(this, LikeActivity::class.java)
+            startActivity(intent)
+        }
 
         val typeList = listOf(
             TypeModel("Bad", R.drawable.bad, R.color.color1),
@@ -78,49 +87,80 @@ class MainActivity : AppCompatActivity() {
 
         recyclerView.adapter = adapter
 
+        Log.d("MainActivity", "onCreate: Initialized drawerLayout, navigationView, and drawerImage")
+
+        if (navigationView == null) {
+            Log.e("MainActivity", "NavigationView is null, cannot set listener.")
+        } else {
+            Log.d("MainActivity", "NavigationView initialized successfully.")
+        }
+
         navigationView.setNavigationItemSelectedListener { item ->
+            Log.d("MainActivity", "Navigation item selected: ${item.title}")
+
             when (item.itemId) {
                 R.id.nav_like -> {
+                    Log.d("MainActivity", "Navigating to LikeActivity")
+
                     Toast.makeText(this, "Liked", Toast.LENGTH_SHORT).show()
-                    true
+                    val intent = Intent(this, LikeActivity::class.java)
+                    startActivity(intent)
+
+                    drawerLayout.closeDrawer(GravityCompat.START)
+
+                    return@setNavigationItemSelectedListener true
                 }
                 R.id.nav_share -> {
+                    Log.d("MainActivity", "Navigating to Share option")
                     Toast.makeText(this, "Shared", Toast.LENGTH_SHORT).show()
-                    true
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    return@setNavigationItemSelectedListener true
                 }
                 R.id.nav_premium -> {
+                    Log.d("MainActivity", "Navigating to Premium option")
                     Toast.makeText(this, "Premium", Toast.LENGTH_SHORT).show()
-                    true
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    return@setNavigationItemSelectedListener true
                 }
                 R.id.nav_review -> {
+                    Log.d("MainActivity", "Navigating to Review option")
                     Toast.makeText(this, "Review", Toast.LENGTH_SHORT).show()
-                    true
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    return@setNavigationItemSelectedListener true
                 }
                 R.id.nav_settings -> {
+                    Log.d("MainActivity", "Navigating to Settings option")
                     Toast.makeText(this, "Settings", Toast.LENGTH_SHORT).show()
-                    true
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    return@setNavigationItemSelectedListener true
                 }
                 R.id.nav_support -> {
+                    Log.d("MainActivity", "Navigating to Customer Support")
                     Toast.makeText(this, "Customer Support", Toast.LENGTH_SHORT).show()
-                    true
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    return@setNavigationItemSelectedListener true
                 }
                 R.id.nav_policy -> {
+                    Log.d("MainActivity", "Navigating to Privacy Policy")
                     Toast.makeText(this, "Privacy Policy", Toast.LENGTH_SHORT).show()
-                    true
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    return@setNavigationItemSelectedListener true
                 }
                 R.id.nav_terms -> {
+                    Log.d("MainActivity", "Navigating to Terms and Conditions")
                     Toast.makeText(this, "Terms and Conditions", Toast.LENGTH_SHORT).show()
-                    true
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    return@setNavigationItemSelectedListener true
                 }
-
-
-                else -> false
+                else -> {
+                    Log.d("MainActivity", "Unknown item selected")
+                    return@setNavigationItemSelectedListener false
+                }
             }
-            drawerLayout.closeDrawer(GravityCompat.START)
-            true
         }
 
         drawerImage.setOnClickListener {
+            Log.d("MainActivity", "Opening drawer")
             drawerLayout.openDrawer(GravityCompat.START)
         }
     }
