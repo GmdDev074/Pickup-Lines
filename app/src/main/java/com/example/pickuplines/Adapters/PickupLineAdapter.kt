@@ -1,12 +1,12 @@
 package com.example.pickuplines.Adapters
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.os.Build
-import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
@@ -59,6 +59,7 @@ class PickupLineAdapter(
 
     override fun getItemCount(): Int = pickupLines.size
 
+    @SuppressLint("CutPasteId")
     private fun savePickupLineAsImage(view: View) {
         val likeButtonVisibility = view.findViewById<ImageView>(R.id.like_button).visibility
         val shareButtonVisibility = view.findViewById<ImageView>(R.id.share_button).visibility
