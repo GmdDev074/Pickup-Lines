@@ -1,4 +1,4 @@
-# Pickup Lines App
+# Pickup Lines
 
 A simple and fun Android app that provides a collection of creative and humorous pickup lines. Users can interact with the app by saving, sharing, liking, and copying their favorite lines. The app also integrates various ad formats, including banner ads, interstitial ads, and native ads, to help with monetization.
 
