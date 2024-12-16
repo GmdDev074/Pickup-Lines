@@ -18,8 +18,6 @@ A simple and fun Android app that provides a collection of creative and humorous
 - **Android SDK**: Developed using Kotlin and Android Studio.
 - **Google AdMob**: Integrated banner, interstitial, and native ads for monetization.
 
-## Setup Instructions
-
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
