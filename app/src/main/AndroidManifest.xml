@@ -25,22 +25,24 @@
         android:name="android.permission.ACCESS_FINE_LOCATION"
         tools:ignore="CoarseFineLocation" />
 
-
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
+        android:enableOnBackInvokedCallback="true"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.PickupLines"
-        android:enableOnBackInvokedCallback="true"
         tools:targetApi="31">
         <activity
-            android:name=".Activities.LikeActivity"
-            android:screenOrientation="locked"
+            android:name=".Activities.PremiumActivity"
             android:exported="false" />
+        <activity
+            android:name=".Activities.LikeActivity"
+            android:exported="false"
+            android:screenOrientation="locked" />
         <activity
             android:name=".Activities.PickupLineActivity"
             android:exported="false"

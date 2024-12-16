@@ -16,10 +16,12 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.pickuplines.R
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import kotlin.random.Random
 
 class LikedPickupLineAdapter(
     private val context: Context,
@@ -27,6 +29,64 @@ class LikedPickupLineAdapter(
 ) : RecyclerView.Adapter<LikedPickupLineAdapter.LikedPickupLineViewHolder>() {
 
     private val sharedPreferences: SharedPreferences = context.getSharedPreferences("LikedPickupLines", Context.MODE_PRIVATE)
+
+    private val backgroundImages = listOf(
+        R.drawable.img1,
+        R.drawable.img2,
+        R.drawable.img3,
+        R.drawable.img4,
+        R.drawable.img5,
+        R.drawable.img6,
+        R.drawable.img7,
+        R.drawable.img8,
+        R.drawable.img9,
+        R.drawable.img10,
+        R.drawable.img11,
+        R.drawable.img12,
+        R.drawable.img13,
+        R.drawable.img14,
+        R.drawable.img15,
+        R.drawable.img17,
+        R.drawable.img18,
+        R.drawable.img19,
+        R.drawable.img20,
+        R.drawable.img21,
+        R.drawable.img22,
+        R.drawable.img23,
+        R.drawable.img24,
+        R.drawable.img25,
+        R.drawable.img26,
+        R.drawable.img27,
+        R.drawable.img28,
+        R.drawable.img29,
+        R.drawable.img30,
+        R.drawable.img31,
+        R.drawable.img32,
+        R.drawable.img33,
+        R.drawable.img34,
+        R.drawable.img35,
+        R.drawable.img36,
+        R.drawable.img37,
+        R.drawable.img38,
+        R.drawable.img39
+    )
+
+    private val textColors = listOf(
+        R.color.color1,
+        R.color.color2,
+        R.color.color3,
+        R.color.color4,
+        R.color.color5,
+        R.color.color6,
+        R.color.color7,
+        R.color.color8,
+        R.color.color9,
+        R.color.color10,
+        R.color.color11,
+        R.color.color12,
+        R.color.color13
+    )
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LikedPickupLineViewHolder {
         val view = LayoutInflater.from(context).inflate(R.layout.item_pickup_line, parent, false)
@@ -36,6 +96,15 @@ class LikedPickupLineAdapter(
     override fun onBindViewHolder(holder: LikedPickupLineViewHolder, position: Int) {
         val pickupLine = likedLines[position]
         holder.pickupLineText.text = pickupLine
+
+        holder.itemView.setOnClickListener {
+            val randomImageUrl = backgroundImages[Random.nextInt(backgroundImages.size)]
+            Glide.with(context)
+                .load(randomImageUrl)
+                .centerCrop()
+                .into(holder.cardViewBackground)
+        }
+
 
         holder.saveButton.setOnClickListener {
             savePickupLineAsImage(holder.itemView)
@@ -130,7 +199,7 @@ class LikedPickupLineAdapter(
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
             out.flush()
             out.close()
-            Toast.makeText(context, "Saved to Photos: ${file.absolutePath}", Toast.LENGTH_SHORT).show()
+            //Toast.makeText(context, "Saved to Photos: ${file.absolutePath}", Toast.LENGTH_SHORT).show()
         } catch (e: Exception) {
             Toast.makeText(context, "Failed to save image.", Toast.LENGTH_SHORT).show()
         }
@@ -156,7 +225,7 @@ class LikedPickupLineAdapter(
         editor.putStringSet("LikedLines", updatedLikedLines)
         editor.apply()
         notifyItemRemoved(position)
-        Toast.makeText(context, "Unliked: $line", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, "Unliked:", Toast.LENGTH_SHORT).show()
     }
 
 
@@ -180,5 +249,6 @@ class LikedPickupLineAdapter(
         val shareButton: ImageView = itemView.findViewById(R.id.share_button)
         val likeButton: ImageView = itemView.findViewById(R.id.like_button)
         val copyButton: ImageView = itemView.findViewById(R.id.copy_button)
+        val cardViewBackground: ImageView = itemView.findViewById(R.id.cardViewBackground)
     }
 }

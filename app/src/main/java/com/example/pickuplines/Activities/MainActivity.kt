@@ -33,6 +33,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var adapter: TypeAdapter
     private lateinit var adView: AdView
     private lateinit var starImageView: ImageView
+    private lateinit var crownImageView: ImageView
     private lateinit var shimmerFrameLayout: ShimmerFrameLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,6 +46,7 @@ class MainActivity : AppCompatActivity() {
         navigation = findViewById(R.id.nav_view)
         drawerImage = findViewById(R.id.drawer_image)
         starImageView = findViewById(R.id.star)
+        crownImageView = findViewById(R.id.crown)
 
         shimmerFrameLayout = findViewById(R.id.shimmer_ad_container)
         adView = findViewById(R.id.adView)
@@ -57,6 +59,12 @@ class MainActivity : AppCompatActivity() {
 
         starImageView.setOnClickListener {
             val intent = Intent(this, LikeActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+
+        crownImageView.setOnClickListener {
+            val intent = Intent(this, PremiumActivity::class.java)
             startActivity(intent)
             finish()
         }
@@ -114,12 +122,17 @@ class MainActivity : AppCompatActivity() {
                 R.id.nav_share -> {
                     Log.d("MainActivity", "Navigating to Share option")
                     Toast.makeText(this, "Shared", Toast.LENGTH_SHORT).show()
+
                     drawerLayout.closeDrawer(GravityCompat.START)
                     return@setNavigationItemSelectedListener true
                 }
                 R.id.nav_premium -> {
                     Log.d("MainActivity", "Navigating to Premium option")
                     Toast.makeText(this, "Premium", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Liked", Toast.LENGTH_SHORT).show()
+                    val intent = Intent(this, PremiumActivity::class.java)
+                    startActivity(intent)
+
                     drawerLayout.closeDrawer(GravityCompat.START)
                     return@setNavigationItemSelectedListener true
                 }

@@ -14,7 +14,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.pickuplines.DataClasses.PickupLine
 import com.example.pickuplines.R
 import com.google.android.gms.ads.AdLoader
@@ -26,6 +28,7 @@ import com.google.android.gms.ads.nativead.NativeAdView
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import kotlin.random.Random
 
 class PickupLineAdapter(
     private val context: Context,
@@ -38,6 +41,63 @@ class PickupLineAdapter(
     private val likedPickupLines: MutableList<String> = mutableListOf()
     private val sharedPreferences: SharedPreferences = context.getSharedPreferences("LikedPickupLines", Context.MODE_PRIVATE)
     private val adUnitId = "ca-app-pub-3940256099942544/2247696110"
+
+    private val backgroundImages = listOf(
+        R.drawable.img1,
+        R.drawable.img2,
+        R.drawable.img3,
+        R.drawable.img4,
+        R.drawable.img5,
+        R.drawable.img6,
+        R.drawable.img7,
+        R.drawable.img8,
+        R.drawable.img9,
+        R.drawable.img10,
+        R.drawable.img11,
+        R.drawable.img12,
+        R.drawable.img13,
+        R.drawable.img14,
+        R.drawable.img15,
+        R.drawable.img17,
+        R.drawable.img18,
+        R.drawable.img19,
+        R.drawable.img20,
+        R.drawable.img21,
+        R.drawable.img22,
+        R.drawable.img23,
+        R.drawable.img24,
+        R.drawable.img25,
+        R.drawable.img26,
+        R.drawable.img27,
+        R.drawable.img28,
+        R.drawable.img29,
+        R.drawable.img30,
+        R.drawable.img31,
+        R.drawable.img32,
+        R.drawable.img33,
+        R.drawable.img34,
+        R.drawable.img35,
+        R.drawable.img36,
+        R.drawable.img37,
+        R.drawable.img38,
+        R.drawable.img39
+    )
+
+    private val textColors = listOf(
+        R.color.color1,
+        R.color.color2,
+        R.color.color3,
+        R.color.color4,
+        R.color.color5,
+        R.color.color6,
+        R.color.color7,
+        R.color.color8,
+        R.color.color9,
+        R.color.color10,
+        R.color.color11,
+        R.color.color12,
+        R.color.color13
+    )
 
     override fun getItemViewType(position: Int): Int {
         return if ((position + 1) % 4 == 0) VIEW_TYPE_NATIVE_AD else VIEW_TYPE_PICKUP_LINE
@@ -57,6 +117,28 @@ class PickupLineAdapter(
         if (holder is PickupLineViewHolder) {
             val pickupLine = pickupLines[position - position / 4]
             holder.pickupLineText.text = pickupLine.line
+
+            holder.itemView.setOnClickListener {
+            val randomImageUrl = backgroundImages[Random.nextInt(backgroundImages.size)]
+            Glide.with(context)
+                .load(randomImageUrl)
+                .centerCrop()
+                .into(holder.cardViewBackground)
+            }
+
+
+           /* holder.itemView.setOnClickListener {
+
+                val randomImage = backgroundImages[Random.nextInt(backgroundImages.size)]
+                holder.constraintLayout.setBackgroundResource(randomImage)
+
+                val randomColor = textColors[Random.nextInt(textColors.size)]
+                holder.constraintLayout.setBackgroundColor(ContextCompat.getColor(context, randomColor))
+
+                val randomColor = textColors[Random.nextInt(textColors.size)]
+                holder.pickupLineText.setTextColor(ContextCompat.getColor(context, randomColor))
+                holder.appName.setTextColor(ContextCompat.getColor(context, randomColor))
+            }*/
 
             holder.saveButton.setOnClickListener {
                 savePickupLineAsImage(holder.itemView)
@@ -162,8 +244,6 @@ class PickupLineAdapter(
         }
     }
 
-
-
     private fun sharePickupLineAsText(line: String) {
         val shareIntent = Intent(Intent.ACTION_SEND).apply {
             type = "text/plain"
@@ -175,7 +255,7 @@ class PickupLineAdapter(
     private fun likePickupLine(line: String) {
         likedPickupLines.add(line)
         sharedPreferences.edit().putStringSet("LikedLines", likedPickupLines.toSet()).apply()
-        Toast.makeText(context, "Liked: $line", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, "Liked:", Toast.LENGTH_SHORT).show()
     }
 
     private fun copyPickupLine(line: String) {
@@ -198,6 +278,9 @@ class PickupLineAdapter(
         val shareButton: ImageView = itemView.findViewById(R.id.share_button)
         val likeButton: ImageView = itemView.findViewById(R.id.like_button)
         val copyButton: ImageView = itemView.findViewById(R.id.copy_button)
+        val cardViewBackground: ImageView = itemView.findViewById(R.id.cardViewBackground)
+        var remainingImages: MutableList<String> = mutableListOf()
+        var clickCounter: Int = 0
     }
 
     /*class NativeAdViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {  //every time new ad will be loads
