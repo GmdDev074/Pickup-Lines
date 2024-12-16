@@ -27,7 +27,7 @@ import com.google.android.material.navigation.NavigationView
 class MainActivity : AppCompatActivity() {
 
     private lateinit var drawerLayout: DrawerLayout
-    private lateinit var navigationView: NavigationView
+    private lateinit var navigation: NavigationView
     private lateinit var drawerImage: ImageView
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: TypeAdapter
@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity() {
 
 
         drawerLayout = findViewById(R.id.drawer_layout)
-        navigationView = findViewById(R.id.nav_view)
+        navigation = findViewById(R.id.nav_view)
         drawerImage = findViewById(R.id.drawer_image)
         starImageView = findViewById(R.id.star)
 
@@ -90,14 +90,14 @@ class MainActivity : AppCompatActivity() {
 
         Log.d("MainActivity", "onCreate: Initialized drawerLayout, navigationView, and drawerImage")
 
-        if (navigationView == null) {
+        if (navigation == null) {
             Log.e("MainActivity", "NavigationView is null, cannot set listener.")
         } else {
             Log.d("MainActivity", "NavigationView initialized successfully.")
         }
 
-        navigationView.setNavigationItemSelectedListener { item ->
-            Log.d("MainActivity", "Navigation item selected: ${item.title}")
+        navigation.setNavigationItemSelectedListener { item ->
+            Log.d("NavigationItemSelected", "Navigation item selected: ${item.title}")
 
             when (item.itemId) {
                 R.id.nav_like -> {
