@@ -4,8 +4,10 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
@@ -35,6 +37,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var starImageView: ImageView
     private lateinit var crownImageView: ImageView
     private lateinit var shimmerFrameLayout: ShimmerFrameLayout
+    private var backPressedTime: Long = 0
+    private val exitInterval = 2000
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,6 +73,8 @@ class MainActivity : AppCompatActivity() {
             finish()
         }
 
+        setupBackPressHandler()
+
         val typeList = listOf(
             TypeModel("Bad", R.drawable.bad, R.color.color1),
             TypeModel("Love", R.drawable.love, R.color.color2),
@@ -85,16 +91,20 @@ class MainActivity : AppCompatActivity() {
             TypeModel("Compliment", R.drawable.compliment, R.color.color13)
         )
 
-        adapter = TypeAdapter(this, typeList) { category ->
+        val progressLayout: FrameLayout = findViewById(R.id.progress_layout)
+
+        adapter = TypeAdapter(this, typeList, { category ->
             val pickupLines = getPickupLinesForCategory(category)
             if (pickupLines.isNotEmpty()) {
                 Toast.makeText(this, "Loaded ${pickupLines.size} lines for $category", Toast.LENGTH_SHORT).show()
             } else {
                 Toast.makeText(this, "No lines available for $category", Toast.LENGTH_SHORT).show()
             }
-        }
+        }, progressLayout)
 
         recyclerView.adapter = adapter
+
+
 
         Log.d("MainActivity", "onCreate: Initialized drawerLayout, navigationView, and drawerImage")
 
@@ -138,12 +148,6 @@ class MainActivity : AppCompatActivity() {
                     drawerLayout.closeDrawer(GravityCompat.START)
                     return@setNavigationItemSelectedListener true
                 }
-                R.id.nav_settings -> {
-                    Log.d("MainActivity", "Navigating to Settings option")
-                    Toast.makeText(this, "Settings", Toast.LENGTH_SHORT).show()
-                    drawerLayout.closeDrawer(GravityCompat.START)
-                    return@setNavigationItemSelectedListener true
-                }
                 R.id.nav_support -> {
                     Log.d("MainActivity", "Navigating to Customer Support")
                     Toast.makeText(this, "Customer Support", Toast.LENGTH_SHORT).show()
@@ -153,12 +157,6 @@ class MainActivity : AppCompatActivity() {
                 R.id.nav_policy -> {
                     Log.d("MainActivity", "Navigating to Privacy Policy")
                     Toast.makeText(this, "Privacy Policy", Toast.LENGTH_SHORT).show()
-                    drawerLayout.closeDrawer(GravityCompat.START)
-                    return@setNavigationItemSelectedListener true
-                }
-                R.id.nav_terms -> {
-                    Log.d("MainActivity", "Navigating to Terms and Conditions")
-                    Toast.makeText(this, "Terms and Conditions", Toast.LENGTH_SHORT).show()
                     drawerLayout.closeDrawer(GravityCompat.START)
                     return@setNavigationItemSelectedListener true
                 }
@@ -222,6 +220,23 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         shimmerFrameLayout.startShimmer()
+    }
+
+    private fun setupBackPressHandler() {
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (backPressedTime + exitInterval > System.currentTimeMillis()) {
+                    finish() // Close the app
+                } else {
+                    Toast.makeText(
+                        this@MainActivity,
+                        "Press back again to exit",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                backPressedTime = System.currentTimeMillis()
+            }
+        })
     }
 
 }

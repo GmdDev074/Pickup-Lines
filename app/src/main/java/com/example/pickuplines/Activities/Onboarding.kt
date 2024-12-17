@@ -59,11 +59,15 @@ class Onboarding : AppCompatActivity() {
         })
 
         btnStart.setOnClickListener {
+            val sharedPreferences = getSharedPreferences("app_prefs", MODE_PRIVATE)
+            sharedPreferences.edit().putBoolean("onboarding_shown", true).apply()
             startActivity(Intent(this, MainActivity::class.java))
             finish()
         }
 
         btnSkip.setOnClickListener {
+            val sharedPreferences = getSharedPreferences("app_prefs", MODE_PRIVATE)
+            sharedPreferences.edit().putBoolean("onboarding_shown", true).apply()
             startActivity(Intent(this, MainActivity::class.java))
             finish()
         }

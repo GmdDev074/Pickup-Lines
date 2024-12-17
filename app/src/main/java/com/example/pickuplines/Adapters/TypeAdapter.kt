@@ -3,10 +3,10 @@ package com.example.pickuplines.Adapters
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
@@ -22,7 +22,8 @@ import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 class TypeAdapter(
     private val context: Context,
     private val typeList: List<TypeModel>,
-    private val itemClickListener: (String) -> Unit
+    private val itemClickListener: (String) -> Unit,
+    private val progressContainer: FrameLayout
 ) : RecyclerView.Adapter<TypeAdapter.TypeViewHolder>() {
 
     private var interstitialAd: InterstitialAd? = null
@@ -64,6 +65,8 @@ class TypeAdapter(
         if (isAdLoading) return
 
         isAdLoading = true
+        showProgressLayout()
+
         val adRequest = AdRequest.Builder().build()
 
         InterstitialAd.load(
@@ -73,23 +76,19 @@ class TypeAdapter(
             object : InterstitialAdLoadCallback() {
                 override fun onAdLoaded(ad: InterstitialAd) {
                     interstitialAd = ad
-                    Log.d("AdStatus", "Interstitial Ad loaded successfully.")
                     isAdLoading = false
+                    hideProgressLayout()
 
                     interstitialAd?.let { loadedAd ->
                         loadedAd.fullScreenContentCallback = object : FullScreenContentCallback() {
                             override fun onAdDismissedFullScreenContent() {
-                                super.onAdDismissedFullScreenContent()
                                 clickCounts = 0
                                 openPickupLineActivity(categoryName)
-                                Log.d("AdStatus", "Interstitial Ad dismissed.")
                             }
 
                             override fun onAdFailedToShowFullScreenContent(adError: com.google.android.gms.ads.AdError) {
-                                super.onAdFailedToShowFullScreenContent(adError)
                                 clickCounts = 0
                                 openPickupLineActivity(categoryName)
-                                Log.e("AdStatus", "Interstitial Ad failed to show: ${adError.message}")
                             }
                         }
                         loadedAd.show(context as Activity)
@@ -99,9 +98,9 @@ class TypeAdapter(
                 override fun onAdFailedToLoad(adError: com.google.android.gms.ads.LoadAdError) {
                     interstitialAd = null
                     isAdLoading = false
+                    hideProgressLayout()
                     clickCounts = 0
                     openPickupLineActivity(categoryName)
-                    Log.e("AdStatus", "Interstitial Ad failed to load: ${adError.message}")
                 }
             }
         )
@@ -113,10 +112,16 @@ class TypeAdapter(
         context.startActivity(intent)
     }
 
+    private fun showProgressLayout() {
+        progressContainer.visibility = View.VISIBLE
+    }
+
+    private fun hideProgressLayout() {
+        progressContainer.visibility = View.GONE
+    }
+
     class TypeViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val txtType: TextView = itemView.findViewById(R.id.txtType)
         val imgType: ImageView = itemView.findViewById(R.id.imgType)
     }
 }
-
-

@@ -118,9 +118,16 @@ class Splash : AppCompatActivity() {
     }
 
     private fun proceedToNextScreen() {
+        val sharedPreferences = getSharedPreferences("app_prefs", MODE_PRIVATE)
+        val isOnboardingShown = sharedPreferences.getBoolean("onboarding_shown", false)
+
         Handler(Looper.getMainLooper()).postDelayed({
-            val intent = Intent(this, Onboarding::class.java)
-            startActivity(intent)
+            if (!isOnboardingShown) {
+                startActivity(Intent(this, Onboarding::class.java))
+                sharedPreferences.edit().putBoolean("onboarding_shown", true).apply()
+            } else {
+                startActivity(Intent(this, MainActivity::class.java))
+            }
             finish()
         }, 4000)
     }
