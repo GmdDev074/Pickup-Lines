@@ -9,12 +9,14 @@ import android.graphics.Canvas
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
+import android.view.HapticFeedbackConstants
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.pickuplines.R
@@ -31,59 +33,23 @@ class LikedPickupLineAdapter(
     private val sharedPreferences: SharedPreferences = context.getSharedPreferences("LikedPickupLines", Context.MODE_PRIVATE)
 
     private val backgroundImages = listOf(
-        R.drawable.img1,
-        R.drawable.img2,
-        R.drawable.img3,
-        R.drawable.img4,
-        R.drawable.img5,
-        R.drawable.img6,
-        R.drawable.img7,
-        R.drawable.img8,
-        R.drawable.img9,
-        R.drawable.img10,
-        R.drawable.img11,
-        R.drawable.img12,
-        R.drawable.img13,
-        R.drawable.img14,
-        R.drawable.img15,
-        R.drawable.img17,
-        R.drawable.img18,
-        R.drawable.img19,
-        R.drawable.img20,
-        R.drawable.img21,
-        R.drawable.img22,
-        R.drawable.img23,
-        R.drawable.img24,
-        R.drawable.img25,
-        R.drawable.img26,
-        R.drawable.img27,
-        R.drawable.img28,
-        R.drawable.img29,
-        R.drawable.img30,
-        R.drawable.img31,
-        R.drawable.img32,
-        R.drawable.img33,
-        R.drawable.img34,
-        R.drawable.img35,
-        R.drawable.img36,
-        R.drawable.img37,
-        R.drawable.img38,
-        R.drawable.img39
+        R.drawable.img1, R.drawable.img2, R.drawable.img3, R.drawable.img4,
+        R.drawable.img5, R.drawable.img6, R.drawable.img7, R.drawable.img8,
+        R.drawable.img9, R.drawable.img10, R.drawable.img11, R.drawable.img12,
+        R.drawable.img13, R.drawable.img14, R.drawable.img15, R.drawable.img17,
+        R.drawable.img18, R.drawable.img19, R.drawable.img20, R.drawable.img21,
+        R.drawable.img22, R.drawable.img23, R.drawable.img24, R.drawable.img25,
+        R.drawable.img26, R.drawable.img27, R.drawable.img28, R.drawable.img29,
+        R.drawable.img30, R.drawable.img31, R.drawable.img32, R.drawable.img33,
+        R.drawable.img34, R.drawable.img35, R.drawable.img36, R.drawable.img37,
+        R.drawable.img38, R.drawable.img39
     )
 
     private val textColors = listOf(
-        R.color.color1,
-        R.color.color2,
-        R.color.color3,
-        R.color.color4,
-        R.color.color5,
-        R.color.color6,
-        R.color.color7,
-        R.color.color8,
-        R.color.color9,
-        R.color.color10,
-        R.color.color11,
-        R.color.color12,
+        R.color.color1, R.color.color2, R.color.color3,
+        R.color.color4, R.color.color5, R.color.color6,
+        R.color.color7, R.color.color8, R.color.color9,
+        R.color.color10, R.color.color11, R.color.color12,
         R.color.color13
     )
 
@@ -96,14 +62,51 @@ class LikedPickupLineAdapter(
     override fun onBindViewHolder(holder: LikedPickupLineViewHolder, position: Int) {
         val pickupLine = likedLines[position]
         holder.pickupLineText.text = pickupLine
+        holder.likeButton.setImageResource(R.drawable.ic_like)
+
+        // Initially set random background image
+        val randomImageUrl = backgroundImages[Random.nextInt(backgroundImages.size)]
+        Glide.with(context)
+            .load(randomImageUrl)
+            .centerCrop()
+            .into(holder.cardViewBackground)
+
+
+        var clickCounter: Int = 0
 
         holder.itemView.setOnClickListener {
-            val randomImageUrl = backgroundImages[Random.nextInt(backgroundImages.size)]
-            Glide.with(context)
-                .load(randomImageUrl)
-                .centerCrop()
-                .into(holder.cardViewBackground)
+            holder.itemView.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
+
+            clickCounter++
+
+            if (clickCounter % 4 == 0) {
+                val randomImageUrl = backgroundImages[Random.nextInt(backgroundImages.size)]
+                Glide.with(context)
+                    .load(randomImageUrl)
+                    .centerCrop()
+                    .into(holder.cardViewBackground)
+
+                holder.cardViewBackground.visibility = View.VISIBLE
+
+                val randomColor = textColors[Random.nextInt(textColors.size)]
+                holder.constraintLayout.setBackgroundColor(ContextCompat.getColor(context, randomColor))
+            } else if (clickCounter % 2 == 0) {
+                val randomImageUrl = backgroundImages[Random.nextInt(backgroundImages.size)]
+                Glide.with(context)
+                    .load(randomImageUrl)
+                    .centerCrop()
+                    .into(holder.cardViewBackground)
+
+                holder.cardViewBackground.visibility = View.VISIBLE
+                holder.constraintLayout.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent))
+            } else {
+                val randomColor = textColors[Random.nextInt(textColors.size)]
+                holder.constraintLayout.setBackgroundColor(ContextCompat.getColor(context, randomColor))
+
+                holder.cardViewBackground.visibility = View.GONE
+            }
         }
+
 
 
         holder.saveButton.setOnClickListener {
@@ -250,5 +253,6 @@ class LikedPickupLineAdapter(
         val likeButton: ImageView = itemView.findViewById(R.id.like_button)
         val copyButton: ImageView = itemView.findViewById(R.id.copy_button)
         val cardViewBackground: ImageView = itemView.findViewById(R.id.cardViewBackground)
+        val constraintLayout: androidx.constraintlayout.widget.ConstraintLayout = itemView.findViewById(R.id.constraintLayout)
     }
 }

@@ -110,8 +110,6 @@ class MainActivity : AppCompatActivity() {
             when (item.itemId) {
                 R.id.nav_like -> {
                     Log.d("MainActivity", "Navigating to LikeActivity")
-
-                    Toast.makeText(this, "Liked", Toast.LENGTH_SHORT).show()
                     val intent = Intent(this, LikeActivity::class.java)
                     startActivity(intent)
 
@@ -128,8 +126,6 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.nav_premium -> {
                     Log.d("MainActivity", "Navigating to Premium option")
-                    Toast.makeText(this, "Premium", Toast.LENGTH_SHORT).show()
-                    Toast.makeText(this, "Liked", Toast.LENGTH_SHORT).show()
                     val intent = Intent(this, PremiumActivity::class.java)
                     startActivity(intent)
 

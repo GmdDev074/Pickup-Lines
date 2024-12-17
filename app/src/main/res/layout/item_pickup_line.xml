@@ -113,7 +113,7 @@
                     android:layout_height="30dp"
                     android:layout_gravity="center_vertical"
                     android:layout_weight="8"
-                    android:src="@drawable/ic_like" />
+                    android:src="@drawable/favorite_border_24" />
 
                 <TextView
                     android:id="@+id/like_text"
