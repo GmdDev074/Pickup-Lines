@@ -64,7 +64,6 @@ class MainActivity : AppCompatActivity() {
         starImageView.setOnClickListener {
             val intent = Intent(this, LikeActivity::class.java)
             startActivity(intent)
-            finish()
         }
 
         crownImageView.setOnClickListener {
