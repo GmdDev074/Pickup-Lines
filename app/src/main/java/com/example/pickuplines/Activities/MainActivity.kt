@@ -1,7 +1,15 @@
 package com.example.pickuplines.Activities
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.os.Environment
+import android.os.Handler
+import android.os.Looper
+import android.provider.Settings
 import android.util.Log
 import android.view.View
 import android.widget.FrameLayout
@@ -10,6 +18,8 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,6 +29,8 @@ import com.example.pickuplines.DataClasses.PickupLinesData
 import com.example.pickuplines.R
 import com.example.pickuplines.Adapters.TypeAdapter
 import com.example.pickuplines.Models.TypeModel
+import com.example.pickuplines.Notifications.createNotificationChannel
+import com.example.pickuplines.Notifications.showNotification
 import com.facebook.shimmer.ShimmerFrameLayout
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
@@ -39,6 +51,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var shimmerFrameLayout: ShimmerFrameLayout
     private var backPressedTime: Long = 0
     private val exitInterval = 2000
+    private val PERMISSIONS_REQUEST_CODE = 100
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,6 +67,12 @@ class MainActivity : AppCompatActivity() {
 
         shimmerFrameLayout = findViewById(R.id.shimmer_ad_container)
         adView = findViewById(R.id.adView)
+
+        createNotificationChannel(this)
+
+        if (!hasPermissions()) {
+            requestPermissions()
+        }
 
         shimmerFrameLayout.startShimmer()
         setupAdView()
@@ -171,6 +190,87 @@ class MainActivity : AppCompatActivity() {
             drawerLayout.openDrawer(GravityCompat.START)
         }
     }
+
+    //request permissions
+    private fun hasPermissions(): Boolean {
+        val requiredPermissions = mutableListOf<String>()
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            requiredPermissions.add(Manifest.permission.READ_EXTERNAL_STORAGE)
+            requiredPermissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (!Environment.isExternalStorageManager()) {
+                return false
+            }
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requiredPermissions.add(Manifest.permission.POST_NOTIFICATIONS)
+        }
+
+        return requiredPermissions.all {
+            ContextCompat.checkSelfPermission(this, it) == PackageManager.PERMISSION_GRANTED
+        }
+    }
+
+    private fun requestPermissions() {
+        val permissionsToRequest = mutableListOf<String>()
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            permissionsToRequest.add(Manifest.permission.READ_EXTERNAL_STORAGE)
+            permissionsToRequest.add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        }
+        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            permissionsToRequest.add(Manifest.permission.READ_EXTERNAL_STORAGE)
+            permissionsToRequest.add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            permissionsToRequest.add(Manifest.permission.POST_NOTIFICATIONS)
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            permissionsToRequest.add(Manifest.permission.READ_MEDIA_IMAGES)
+        }
+        ActivityCompat.requestPermissions(
+            this,
+            permissionsToRequest.toTypedArray(),
+            PERMISSIONS_REQUEST_CODE
+        )
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == PERMISSIONS_REQUEST_CODE) {
+            val deniedPermissions = permissions
+                .filterIndexed { index, _ -> grantResults[index] != PackageManager.PERMISSION_GRANTED }
+
+            if (deniedPermissions.isEmpty()) {
+                Toast.makeText(this, "All permissions granted!", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    /*private fun proceedToNextScreen() {
+        val sharedPreferences = getSharedPreferences("app_prefs", MODE_PRIVATE)
+        val isOnboardingShown = sharedPreferences.getBoolean("onboarding_shown", false)
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            if (!isOnboardingShown) {
+                //startActivity(Intent(this, Onboarding::class.java))
+                sharedPreferences.edit().putBoolean("onboarding_shown", true).apply()
+            } else {
+                //startActivity(Intent(this, MainActivity::class.java))
+            }
+            //finish()
+        }, 4000)
+    } */ // end request permissions
+
 
     private fun getPickupLinesForCategory(category: String): List<PickupLine> {
         return when (category) {

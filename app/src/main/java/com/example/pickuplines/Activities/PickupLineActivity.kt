@@ -3,6 +3,8 @@ package com.example.pickuplines.Activities
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.widget.ImageView
@@ -14,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.pickuplines.Adapters.PickupLineAdapter
 import com.example.pickuplines.DataClasses.PickupLine
 import com.example.pickuplines.DataClasses.PickupLinesData
+import com.example.pickuplines.Notifications.showNotification
 import com.example.pickuplines.R
 import com.facebook.shimmer.ShimmerFrameLayout
 import com.google.android.gms.ads.*
@@ -27,6 +30,8 @@ class PickupLineActivity : AppCompatActivity() {
     private lateinit var shimmerFrameLayout: ShimmerFrameLayout
     private lateinit var txtType: TextView
     private lateinit var imageBack: ImageView
+    private val handler = Handler(Looper.getMainLooper())
+    private val randomLineRunnable = Runnable { showRandomPickupLineNotification() }
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,6 +60,8 @@ class PickupLineActivity : AppCompatActivity() {
         shimmerFrameLayout.startShimmer()
         setupAdView()
         loadPickupLines()
+
+        startPeriodicNotification()
     }
 
     private fun setupAdView() {
@@ -84,7 +91,8 @@ class PickupLineActivity : AppCompatActivity() {
             pickupLineAdapter = PickupLineAdapter(this, pickupLines)
             pickupLinesRecyclerView.adapter = pickupLineAdapter
         } else {
-            Toast.makeText(this, "No pickup lines available for $category", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "No pickup lines available for $category", Toast.LENGTH_SHORT)
+                .show()
         }
     }
 
@@ -107,13 +115,46 @@ class PickupLineActivity : AppCompatActivity() {
         }
     }
 
+    private fun showRandomPickupLineNotification() {
+        val pickupLines = getPickupLinesForCategory(category)
+        if (pickupLines.isNotEmpty()) {
+            val randomLine = pickupLines.random()
+            showNotification(this, "Trending Pickup Line", randomLine.line)
+        }
+    }
+
+    private fun startPeriodicNotification() {
+        handler.postDelayed(randomLineRunnable, 15 * 1000L)
+    }
+
+    private fun cancelPeriodicNotification() {
+        handler.removeCallbacks(randomLineRunnable)
+    }
+
     override fun onPause() {
         super.onPause()
         shimmerFrameLayout.stopShimmer()
+        startPeriodicNotification()
     }
 
     override fun onResume() {
         super.onResume()
         shimmerFrameLayout.startShimmer()
+        startPeriodicNotification()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        startPeriodicNotification()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        startPeriodicNotification()
+
+    }
+    override fun onRestart() {
+        super.onRestart()
+        startPeriodicNotification()
     }
 }

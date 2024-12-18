@@ -48,6 +48,7 @@ dependencies {
 
     implementation("com.airbnb.android:lottie:6.1.0")
     implementation("com.google.android.gms:play-services-ads:22.3.0")
+    implementation("com.google.android.gms:play-services-ads:22.4.0")
     implementation("com.facebook.shimmer:shimmer:0.5.0")
 
     implementation("com.github.bumptech.glide:glide:4.15.1")
@@ -55,4 +56,5 @@ dependencies {
 
     //app open ad
     implementation("androidx.lifecycle:lifecycle-process:2.8.3")
+    implementation("com.github.1902shubh:AdmobOpenAds:1.0.1")
 }
