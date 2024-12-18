@@ -16,6 +16,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.airbnb.lottie.LottieAnimationView
+import com.example.pickuplines.Notifications.createNotificationChannel
+import com.example.pickuplines.Notifications.showNotification
 import com.example.pickuplines.R
 
 class Splash : AppCompatActivity() {
@@ -32,6 +34,8 @@ class Splash : AppCompatActivity() {
         animationView.playAnimation()
         animationView.loop(true)
 
+        createNotificationChannel(this)
+
         if (!hasPermissions()) {
             requestPermissions()
         } else {
@@ -40,10 +44,7 @@ class Splash : AppCompatActivity() {
     }
 
     private fun hasPermissions(): Boolean {
-        val requiredPermissions = mutableListOf(
-            Manifest.permission.CAMERA,
-            Manifest.permission.ACCESS_FINE_LOCATION
-        )
+        val requiredPermissions = mutableListOf<String>()
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
             requiredPermissions.add(Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -64,10 +65,7 @@ class Splash : AppCompatActivity() {
     }
 
     private fun requestPermissions() {
-        val permissionsToRequest = mutableListOf(
-            Manifest.permission.CAMERA,
-            Manifest.permission.ACCESS_FINE_LOCATION
-        )
+        val permissionsToRequest = mutableListOf<String>()
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
             permissionsToRequest.add(Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -109,11 +107,12 @@ class Splash : AppCompatActivity() {
             } else {
                 Toast.makeText(
                     this,
-                    "Some permissions were denied: ${deniedPermissions.joinToString()}.\nFeatures may be limited.",
+                    "Some permissions were denied: ${deniedPermissions.joinToString()}\nFeatures may be limited.",
                     Toast.LENGTH_LONG
                 ).show()
                 proceedToNextScreen()
             }
+            showNotification(this, "Permission Granted", "Now you can receive notifications.")
         }
     }
 

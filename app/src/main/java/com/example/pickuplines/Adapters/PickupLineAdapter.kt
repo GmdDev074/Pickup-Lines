@@ -19,6 +19,8 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.pickuplines.DataClasses.PickupLine
+import com.example.pickuplines.Notifications.createNotificationChannel
+import com.example.pickuplines.Notifications.showNotification
 import com.example.pickuplines.R
 import com.google.android.gms.ads.AdLoader
 import com.google.android.gms.ads.AdRequest
@@ -141,6 +143,11 @@ class PickupLineAdapter(
 
             holder.saveButton.setOnClickListener {
                 savePickupLineAsImage(holder.itemView)
+                showNotification(
+                    context,
+                    "Image Saved",
+                    "The image has been successfully saved."
+                )
                 Log.d("PickupLineAdapter", "Save button clicked for pickup line: ${pickupLine.line}")
             }
             holder.shareButton.setOnClickListener {
@@ -154,12 +161,10 @@ class PickupLineAdapter(
                     likedPickupLines.remove(pickupLine.line)
                     sharedPreferences.edit().putStringSet("LikedLines", likedPickupLines.toSet()).apply()
                     holder.likeButton.setImageResource(R.drawable.favorite_border_24)
-                    Toast.makeText(context, "Unliked", Toast.LENGTH_SHORT).show()
                 } else {
                     likedPickupLines.add(pickupLine.line)
                     sharedPreferences.edit().putStringSet("LikedLines", likedPickupLines.toSet()).apply()
                     holder.likeButton.setImageResource(R.drawable.ic_like)
-                    Toast.makeText(context, "Liked", Toast.LENGTH_SHORT).show()
                 }
             }
             if (likedPickupLines.contains(pickupLine.line)) {

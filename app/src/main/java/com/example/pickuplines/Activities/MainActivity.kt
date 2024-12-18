@@ -34,7 +34,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: TypeAdapter
     private lateinit var adView: AdView
-    private lateinit var starImageView: ImageView
+    private lateinit var likeImageView: ImageView
     private lateinit var crownImageView: ImageView
     private lateinit var shimmerFrameLayout: ShimmerFrameLayout
     private var backPressedTime: Long = 0
@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity() {
         drawerLayout = findViewById(R.id.drawer_layout)
         navigation = findViewById(R.id.nav_view)
         drawerImage = findViewById(R.id.drawer_image)
-        starImageView = findViewById(R.id.star)
+        likeImageView = findViewById(R.id.like)
         crownImageView = findViewById(R.id.crown)
 
         shimmerFrameLayout = findViewById(R.id.shimmer_ad_container)
@@ -61,7 +61,7 @@ class MainActivity : AppCompatActivity() {
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        starImageView.setOnClickListener {
+        likeImageView.setOnClickListener {
             val intent = Intent(this, LikeActivity::class.java)
             startActivity(intent)
         }
@@ -225,13 +225,10 @@ class MainActivity : AppCompatActivity() {
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 if (backPressedTime + exitInterval > System.currentTimeMillis()) {
-                    finish() // Close the app
+                    finish()
                 } else {
                     Toast.makeText(
-                        this@MainActivity,
-                        "Press back again to exit",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                        this@MainActivity, "Press back again to exit", Toast.LENGTH_SHORT).show()
                 }
                 backPressedTime = System.currentTimeMillis()
             }

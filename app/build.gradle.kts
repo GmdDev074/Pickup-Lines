@@ -51,4 +51,8 @@ dependencies {
     implementation("com.facebook.shimmer:shimmer:0.5.0")
 
     implementation("com.github.bumptech.glide:glide:4.15.1")
+    implementation("androidx.core:core-ktx:1.15.0")
+
+    //app open ad
+    implementation("androidx.lifecycle:lifecycle-process:2.8.3")
 }
