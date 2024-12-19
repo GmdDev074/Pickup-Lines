@@ -3,13 +3,9 @@ package com.example.pickuplines.Activities
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
-import android.os.Handler
-import android.os.Looper
-import android.provider.Settings
 import android.util.Log
 import android.view.View
 import android.widget.FrameLayout
@@ -29,8 +25,8 @@ import com.example.pickuplines.DataClasses.PickupLinesData
 import com.example.pickuplines.R
 import com.example.pickuplines.Adapters.TypeAdapter
 import com.example.pickuplines.Models.TypeModel
+import com.example.pickuplines.Notifications.NotificationService
 import com.example.pickuplines.Notifications.createNotificationChannel
-import com.example.pickuplines.Notifications.showNotification
 import com.facebook.shimmer.ShimmerFrameLayout
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
@@ -69,6 +65,9 @@ class MainActivity : AppCompatActivity() {
         adView = findViewById(R.id.adView)
 
         createNotificationChannel(this)
+
+        val serviceIntent = Intent(this, NotificationService::class.java)
+        startService(serviceIntent)
 
         if (!hasPermissions()) {
             requestPermissions()

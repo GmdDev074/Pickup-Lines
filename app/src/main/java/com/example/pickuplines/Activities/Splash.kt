@@ -22,7 +22,7 @@ class Splash : AppCompatActivity() {
         animationView.playAnimation()
         animationView.loop(true)
 
-        createNotificationChannel(this)
+        //createNotificationChannel(this)
 
         proceedToNextScreen()
     }

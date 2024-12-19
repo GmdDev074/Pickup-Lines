@@ -71,12 +71,15 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <service
+        <!--<service
             android:name=".Notifications.NotificationService"
             android:permission="android.permission.BIND_JOB_SERVICE"
             android:exported="true"
             android:foregroundServiceType="dataSync"
-            android:enabled="true"/>
+            android:enabled="true"/>-->
+
+        <service android:name=".Notifications.NotificationService" />
+        <receiver android:name=".Notifications.NotificationReceiver" />
 
 
     </application>

@@ -1,6 +1,8 @@
 package com.example.pickuplines.Adapters
 
-import android.annotation.SuppressLint
+import android.app.Activity
+import android.app.AlertDialog
+import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -9,7 +11,6 @@ import android.graphics.Canvas
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
-import android.util.Log
 import android.view.HapticFeedbackConstants
 import android.view.LayoutInflater
 import android.view.View
@@ -19,7 +20,6 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.pickuplines.DataClasses.PickupLine
-import com.example.pickuplines.Notifications.createNotificationChannel
 import com.example.pickuplines.Notifications.showNotification
 import com.example.pickuplines.R
 import com.google.android.gms.ads.AdLoader
@@ -27,7 +27,8 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.nativead.NativeAd
-import com.google.android.gms.ads.nativead.NativeAdView
+import com.google.android.gms.ads.rewarded.RewardedAd
+import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -128,28 +129,67 @@ class PickupLineAdapter(
             }
 
 
-            /* holder.itemView.setOnClickListener {
-
-                 val randomImage = backgroundImages[Random.nextInt(backgroundImages.size)]
-                 holder.constraintLayout.setBackgroundResource(randomImage)
-
-                 val randomColor = textColors[Random.nextInt(textColors.size)]
-                 holder.constraintLayout.setBackgroundColor(ContextCompat.getColor(context, randomColor))
-
-                 val randomColor = textColors[Random.nextInt(textColors.size)]
-                 holder.pickupLineText.setTextColor(ContextCompat.getColor(context, randomColor))
-                 holder.appName.setTextColor(ContextCompat.getColor(context, randomColor))
-             }*/
-
             holder.saveButton.setOnClickListener {
-                savePickupLineAsImage(holder.itemView)
-                showNotification(
-                    context,
-                    "Image Saved",
-                    "The image has been successfully saved."
-                )
-                Log.d("PickupLineAdapter", "Save button clicked for pickup line: ${pickupLine.line}")
+                // Get references to views
+                val txtAppName = holder.itemView.findViewById<TextView>(R.id.app_name)
+                val cardView = holder.itemView.findViewById<androidx.cardview.widget.CardView>(R.id.cardView)
+
+                if (txtAppName.visibility == View.GONE) {
+                    // If app_name is already hidden for this item, download without watermark
+                    savePickupLineAsImage(holder.itemView, cardView, txtAppNameHidden = true)
+                    showNotification(
+                        context,
+                        "Image Saved",
+                        "The image has been successfully saved without the app name."
+                    )
+                } else {
+                    // Show the custom dialog to decide on watermark removal
+                    val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_watch_ad, null)
+                    val dialog = AlertDialog.Builder(context)
+                        .setView(dialogView)
+                        .setCancelable(false)
+                        .create()
+
+                    val watchAdButton = dialogView.findViewById<Button>(R.id.watch_ad_button)
+                    val cancelButton = dialogView.findViewById<Button>(R.id.cancel_button)
+                    val closeButton = dialogView.findViewById<ImageView>(R.id.closeImage)
+
+                    closeButton.setOnClickListener {
+                        dialog.dismiss()
+                    }
+
+                    watchAdButton.setOnClickListener {
+                        // Handle the "Watch Ad" logic
+                        showRewardAd {
+                            // Callback when the ad finishes
+                            txtAppName.visibility = View.GONE // Hide app_name for this item
+                            savePickupLineAsImage(holder.itemView, cardView, txtAppNameHidden = true)
+                            showNotification(
+                                context,
+                                "Image Saved",
+                                "The image has been successfully saved without the app name."
+                            )
+                            dialog.dismiss()
+                        }
+                    }
+
+                    cancelButton.setOnClickListener {
+                        // Handle the "Cancel" logic
+                        savePickupLineAsImage(holder.itemView, cardView, txtAppNameHidden = false)
+                        showNotification(
+                            context,
+                            "Image Saved",
+                            "The image has been successfully saved with the app name visible."
+                        )
+                        dialog.dismiss()
+                    }
+
+                    dialog.show()
+                }
             }
+
+
+
             holder.shareButton.setOnClickListener {
                 sharePickupLineAsText(pickupLine.line)
             }
@@ -186,68 +226,55 @@ class PickupLineAdapter(
         return pickupLines.size + pickupLines.size / 3
     }
 
-    @SuppressLint("CutPasteId")
-    private fun savePickupLineAsImage(view: View) {
-        val likeButtonVisibility = view.findViewById<ImageView>(R.id.like_button).visibility
-        val shareButtonVisibility = view.findViewById<ImageView>(R.id.share_button).visibility
-        val saveButtonVisibility = view.findViewById<ImageView>(R.id.download_button).visibility
-        val copyButtonVisibility = view.findViewById<ImageView>(R.id.copy_button).visibility
 
-        val cardViewVisibility = view.findViewById<androidx.cardview.widget.CardView>(R.id.cardView).visibility
-        val txtDownloadVisibility = view.findViewById<TextView>(R.id.download_text).visibility
-        val txtShareVisibility = view.findViewById<TextView>(R.id.share_text).visibility
-        val txtLikeVisibility = view.findViewById<TextView>(R.id.like_text).visibility
-        val txtCopyVisibility = view.findViewById<TextView>(R.id.copy_text).visibility
+    private fun savePickupLineAsImage(view: View, cardView: androidx.cardview.widget.CardView, txtAppNameHidden: Boolean) {
+        val bitmap = Bitmap.createBitmap(view.width, view.height, Bitmap.Config.ARGB_8888)
+        val txtAppName = (view.context as Activity).findViewById<TextView>(R.id.app_name)
 
-        view.findViewById<ImageView>(R.id.like_button).visibility = View.INVISIBLE
-        view.findViewById<ImageView>(R.id.share_button).visibility = View.INVISIBLE
-        view.findViewById<ImageView>(R.id.download_button).visibility = View.INVISIBLE
-        view.findViewById<ImageView>(R.id.copy_button).visibility = View.INVISIBLE
-        view.findViewById<androidx.cardview.widget.CardView>(R.id.cardView).visibility = View.INVISIBLE
-        view.findViewById<TextView>(R.id.download_text).visibility = View.INVISIBLE
-        view.findViewById<TextView>(R.id.share_text).visibility = View.INVISIBLE
-        view.findViewById<TextView>(R.id.like_text).visibility = View.INVISIBLE
-        view.findViewById<TextView>(R.id.copy_text).visibility = View.INVISIBLE
+        // Adjust visibility of app_name based on the condition
+        txtAppName.visibility = if (txtAppNameHidden) View.GONE else View.VISIBLE
 
-        val bitmap = createBitmapFromView(view)
+        // Temporarily hide the cardView for clean bitmap capture
+        cardView.visibility = View.GONE
+        val canvas = Canvas(bitmap)
+        view.draw(canvas)
 
-        view.findViewById<ImageView>(R.id.like_button).visibility = likeButtonVisibility
-        view.findViewById<ImageView>(R.id.share_button).visibility = shareButtonVisibility
-        view.findViewById<ImageView>(R.id.download_button).visibility = saveButtonVisibility
-        view.findViewById<ImageView>(R.id.copy_button).visibility = copyButtonVisibility
-        view.findViewById<androidx.cardview.widget.CardView>(R.id.cardView).visibility = cardViewVisibility
-        view.findViewById<TextView>(R.id.download_text).visibility = txtDownloadVisibility
-        view.findViewById<TextView>(R.id.share_text).visibility = txtShareVisibility
-        view.findViewById<TextView>(R.id.like_text).visibility = txtLikeVisibility
-        view.findViewById<TextView>(R.id.copy_text).visibility = txtCopyVisibility
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            saveImageToMediaStore(bitmap)
-        } else {
-            saveImageToExternalStorage(bitmap)
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                saveImageToMediaStore(bitmap)
+            } else {
+                saveImageToExternalStorage(bitmap)
+            }
+            // Restore visibility after saving the image
+            cardView.visibility = View.VISIBLE
+        } catch (e: IOException) {
+            Toast.makeText(view.context, "Failed to save image.", Toast.LENGTH_SHORT).show()
+            // Ensure the visibility is restored in case of failure
+            cardView.visibility = View.VISIBLE
         }
     }
 
-
     private fun saveImageToMediaStore(bitmap: Bitmap) {
         try {
-            val contentValues = android.content.ContentValues().apply {
+            val contentValues = ContentValues().apply {
                 put(MediaStore.Images.Media.DISPLAY_NAME, "pickup_line_${System.currentTimeMillis()}.png")
                 put(MediaStore.Images.Media.MIME_TYPE, "image/png")
                 put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/Pickup Lines")
             }
 
-            val imageUri = context.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+            val imageUri = context.contentResolver.insert(
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                contentValues
+            )
 
             imageUri?.let {
                 context.contentResolver.openOutputStream(it)?.use { outputStream ->
                     bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-                    Toast.makeText(context, "Saved to Photos!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Image saved to gallery!", Toast.LENGTH_SHORT).show()
                 }
             }
         } catch (e: IOException) {
-            Log.e("PickupLineAdapter", "Error saving image", e)
-            Toast.makeText(context, "Failed to save image.", Toast.LENGTH_SHORT).show()
+            throw e
         }
     }
 
@@ -260,12 +287,34 @@ class PickupLineAdapter(
             FileOutputStream(file).use { outputStream ->
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
                 outputStream.flush()
-                Toast.makeText(context, "Saved to Photos: ${file.absolutePath}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Saved to: ${file.absolutePath}", Toast.LENGTH_SHORT).show()
             }
-        } catch (e: Exception) {
-            Log.e("PickupLineAdapter", "Error saving image", e)
-            Toast.makeText(context, "Failed to save image.", Toast.LENGTH_SHORT).show()
+        } catch (e: IOException) {
+            throw e
         }
+    }
+
+    private fun showRewardAd(onAdComplete: () -> Unit) {
+        val context = context as Activity
+        val txtAppName = context.findViewById<TextView>(R.id.app_name)
+        txtAppName.visibility = View.GONE
+        val rewardedAd = RewardedAd.load(
+            context,
+            "ca-app-pub-3940256099942544/5224354917",
+            AdRequest.Builder().build(),
+            object : RewardedAdLoadCallback() {
+                override fun onAdLoaded(ad: RewardedAd) {
+                    ad.show(context) {
+                        // Handle the reward
+                        onAdComplete()
+                    }
+                }
+
+                override fun onAdFailedToLoad(loadAdError: LoadAdError) {
+                    Toast.makeText(context, "Failed to load ad", Toast.LENGTH_SHORT).show()
+                }
+            }
+        )
     }
 
     private fun sharePickupLineAsText(line: String) {
@@ -304,44 +353,7 @@ class PickupLineAdapter(
         val copyButton: ImageView = itemView.findViewById(R.id.copy_button)
         val cardViewBackground: ImageView = itemView.findViewById(R.id.cardViewBackground)
         val constraintLayout: androidx.constraintlayout.widget.ConstraintLayout = itemView.findViewById(R.id.constraintLayout)
-        var remainingImages: MutableList<String> = mutableListOf()
-        var clickCounter: Int = 0
     }
-
-    /*class NativeAdViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {  //every time new ad will be loads
-        private val progressBar: ProgressBar = itemView.findViewById(R.id.ad_progress_bar)
-        private val adHeadline: TextView = itemView.findViewById(R.id.ad_headline)
-        private val adBody: TextView = itemView.findViewById(R.id.ad_body)
-        private val callToAction: Button = itemView.findViewById(R.id.ad_call_to_action)
-        private val adIcon: ImageView = itemView.findViewById(R.id.ad_app_icon)
-
-        fun loadNativeAd(context: Context, adUnitId: String) {
-            progressBar.visibility = View.VISIBLE
-            adHeadline.text = ""
-            adBody.text = ""
-            callToAction.text = ""
-            adIcon.setImageDrawable(null)
-
-            val adLoader = AdLoader.Builder(context, adUnitId)
-                .forNativeAd { nativeAd ->
-                    progressBar.visibility = View.GONE
-
-                    adHeadline.text = nativeAd.headline
-                    adBody.text = nativeAd.body
-                    callToAction.text = nativeAd.callToAction
-                    adIcon.setImageDrawable(nativeAd.icon?.drawable)
-                }
-                .withAdListener(object : AdListener() {
-                    override fun onAdFailedToLoad(adError: LoadAdError) {
-                        super.onAdFailedToLoad(adError)
-                        progressBar.visibility = View.GONE
-                    }
-                })
-                .build()
-
-            adLoader.loadAd(AdRequest.Builder().build())
-        }
-    }*/
 
     class NativeAdViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) { //same ad will be display on all the views
         private val progressBar: ProgressBar = itemView.findViewById(R.id.ad_progress_bar)
@@ -356,39 +368,32 @@ class PickupLineAdapter(
 
         fun loadNativeAd(context: Context, adUnitId: String) {
             if (loadedNativeAd != null) {
-                displayAd(loadedNativeAd!!)
+                displayNativeAd()
             } else {
-                progressBar.visibility = View.VISIBLE
-                adHeadline.text = ""
-                adBody.text = ""
-                callToAction.text = ""
-                adIcon.setImageDrawable(null)
-
-                val adLoader = AdLoader.Builder(context, adUnitId)
+                AdLoader.Builder(context, adUnitId)
                     .forNativeAd { nativeAd ->
-                        progressBar.visibility = View.GONE
                         loadedNativeAd = nativeAd
-                        displayAd(nativeAd)
+                        displayNativeAd()
                     }
                     .withAdListener(object : AdListener() {
                         override fun onAdFailedToLoad(adError: LoadAdError) {
                             super.onAdFailedToLoad(adError)
-                            progressBar.visibility = View.GONE
                         }
                     })
                     .build()
-
-                adLoader.loadAd(AdRequest.Builder().build())
+                    .loadAd(AdRequest.Builder().build())
             }
         }
 
-        private fun displayAd(nativeAd: NativeAd) {
-            adHeadline.text = nativeAd.headline
-            adBody.text = nativeAd.body
-            callToAction.text = nativeAd.callToAction
-            adIcon.setImageDrawable(nativeAd.icon?.drawable)
+        private fun displayNativeAd() {
+            loadedNativeAd?.let { nativeAd ->
+                adHeadline.text = nativeAd.headline
+                adBody.text = nativeAd.body
+                callToAction.text = nativeAd.callToAction
+                Glide.with(itemView.context).load(nativeAd.icon?.uri).into(adIcon)
+                progressBar.visibility = View.GONE
+                itemView.visibility = View.VISIBLE
+            }
         }
     }
-
-
 }

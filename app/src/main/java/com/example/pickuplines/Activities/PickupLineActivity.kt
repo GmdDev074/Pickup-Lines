@@ -30,8 +30,6 @@ class PickupLineActivity : AppCompatActivity() {
     private lateinit var shimmerFrameLayout: ShimmerFrameLayout
     private lateinit var txtType: TextView
     private lateinit var imageBack: ImageView
-    private val handler = Handler(Looper.getMainLooper())
-    private val randomLineRunnable = Runnable { showRandomPickupLineNotification() }
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,8 +58,6 @@ class PickupLineActivity : AppCompatActivity() {
         shimmerFrameLayout.startShimmer()
         setupAdView()
         loadPickupLines()
-
-        startPeriodicNotification()
     }
 
     private fun setupAdView() {
@@ -115,46 +111,14 @@ class PickupLineActivity : AppCompatActivity() {
         }
     }
 
-    private fun showRandomPickupLineNotification() {
-        val pickupLines = getPickupLinesForCategory(category)
-        if (pickupLines.isNotEmpty()) {
-            val randomLine = pickupLines.random()
-            showNotification(this, "Trending Pickup Line", randomLine.line)
-        }
-    }
-
-    private fun startPeriodicNotification() {
-        handler.postDelayed(randomLineRunnable, 15 * 1000L)
-    }
-
-    private fun cancelPeriodicNotification() {
-        handler.removeCallbacks(randomLineRunnable)
-    }
 
     override fun onPause() {
         super.onPause()
         shimmerFrameLayout.stopShimmer()
-        startPeriodicNotification()
     }
 
     override fun onResume() {
         super.onResume()
         shimmerFrameLayout.startShimmer()
-        startPeriodicNotification()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        startPeriodicNotification()
-    }
-
-    override fun onStop() {
-        super.onStop()
-        startPeriodicNotification()
-
-    }
-    override fun onRestart() {
-        super.onRestart()
-        startPeriodicNotification()
     }
 }
