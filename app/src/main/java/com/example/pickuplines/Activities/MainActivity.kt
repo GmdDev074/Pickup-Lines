@@ -88,7 +88,6 @@ class MainActivity : AppCompatActivity() {
         crownImageView.setOnClickListener {
             val intent = Intent(this, PremiumActivity::class.java)
             startActivity(intent)
-            finish()
         }
 
         setupBackPressHandler()
@@ -107,7 +106,7 @@ class MainActivity : AppCompatActivity() {
             TypeModel("Seductive", R.drawable.flirt, R.color.color11),
             TypeModel("Classic", R.drawable.classic, R.color.color12),
             TypeModel("Compliment", R.drawable.compliment, R.color.color13),
-            TypeModel("Attraction", R.drawable.attraction, R.color.color13)
+            TypeModel("Attraction", R.drawable.attraction, R.color.color14)
         )
 
         val progressLayout: FrameLayout = findViewById(R.id.progress_layout)
