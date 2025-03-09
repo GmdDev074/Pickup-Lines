@@ -94,19 +94,20 @@ class PickupLineActivity : AppCompatActivity() {
 
     private fun getPickupLinesForCategory(category: String): List<PickupLine> {
         return when (category) {
-            "Bad" -> PickupLinesData.badLines
-            "Love" -> PickupLinesData.loveLines
-            "Cute" -> PickupLinesData.cuteLines
-            "Clever" -> PickupLinesData.cleverLines
-            "Dirty" -> PickupLinesData.dirtyLines
-            "Food" -> PickupLinesData.foodLines
-            "Cheesy" -> PickupLinesData.cheesyLines
-            "Funny" -> PickupLinesData.funnyLines
-            "Romantic" -> PickupLinesData.romanticLines
-            "Sad" -> PickupLinesData.sadLines
-            "Flirty" -> PickupLinesData.flirtyLines
+            "Dreadful" -> PickupLinesData.badLines
+            "Romance" -> PickupLinesData.loveLines
+            "Endearing" -> PickupLinesData.cuteLines
+            "Witty" -> PickupLinesData.cleverLines
+            "Smutty" -> PickupLinesData.dirtyLines
+            "Cuisine" -> PickupLinesData.foodLines
+            "Corny" -> PickupLinesData.cheesyLines
+            "Comical" -> PickupLinesData.funnyLines
+            "Affectionate" -> PickupLinesData.romanticLines
+            "Gloomy" -> PickupLinesData.sadLines
+            "Seductive" -> PickupLinesData.flirtyLines
             "Classic" -> PickupLinesData.classicLines
             "Compliment" -> PickupLinesData.complimentLines
+            "Attraction" -> PickupLinesData.attraction
             else -> emptyList()
         }
     }

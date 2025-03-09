@@ -18,6 +18,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pickuplines.DataClasses.PickupLine
@@ -77,7 +78,7 @@ class MainActivity : AppCompatActivity() {
         setupAdView()
 
         recyclerView = findViewById(R.id.recyclerView)
-        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.layoutManager = GridLayoutManager(this, 2)
 
         likeImageView.setOnClickListener {
             val intent = Intent(this, LikeActivity::class.java)
@@ -93,19 +94,20 @@ class MainActivity : AppCompatActivity() {
         setupBackPressHandler()
 
         val typeList = listOf(
-            TypeModel("Bad", R.drawable.bad, R.color.color1),
-            TypeModel("Love", R.drawable.love, R.color.color2),
-            TypeModel("Cute", R.drawable.cute, R.color.color3),
-            TypeModel("Clever", R.drawable.clever, R.color.color4),
-            TypeModel("Dirty", R.drawable.dirty, R.color.color5),
-            TypeModel("Food", R.drawable.foodie, R.color.color6),
-            TypeModel("Cheesy", R.drawable.chessy, R.color.color7),
-            TypeModel("Funny", R.drawable.funny, R.color.color8),
-            TypeModel("Romantic", R.drawable.romantic, R.color.color9),
-            TypeModel("Sad", R.drawable.sad, R.color.color10),
-            TypeModel("Flirty", R.drawable.flirt, R.color.color11),
+            TypeModel("Dreadful", R.drawable.bad, R.color.color1),
+            TypeModel("Romance", R.drawable.love, R.color.color2),
+            TypeModel("Endearing", R.drawable.cute, R.color.color3),
+            TypeModel("Witty", R.drawable.clever, R.color.color4),
+            TypeModel("Smutty", R.drawable.dirty, R.color.color5),
+            TypeModel("Cuisine", R.drawable.foodie, R.color.color6),
+            TypeModel("Corny", R.drawable.chessy, R.color.color7),
+            TypeModel("Comical", R.drawable.funny, R.color.color8),
+            TypeModel("Affectionate", R.drawable.romantic, R.color.color9),
+            TypeModel("Gloomy", R.drawable.sad, R.color.color10),
+            TypeModel("Seductive", R.drawable.flirt, R.color.color11),
             TypeModel("Classic", R.drawable.classic, R.color.color12),
-            TypeModel("Compliment", R.drawable.compliment, R.color.color13)
+            TypeModel("Compliment", R.drawable.compliment, R.color.color13),
+            TypeModel("Attraction", R.drawable.attraction, R.color.color13)
         )
 
         val progressLayout: FrameLayout = findViewById(R.id.progress_layout)
@@ -118,6 +120,8 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "No lines available for $category", Toast.LENGTH_SHORT).show()
             }
         }, progressLayout)
+
+
 
         recyclerView.adapter = adapter
 
@@ -273,17 +277,20 @@ class MainActivity : AppCompatActivity() {
 
     private fun getPickupLinesForCategory(category: String): List<PickupLine> {
         return when (category) {
-            "Bad" -> PickupLinesData.badLines
-            "Love" -> PickupLinesData.loveLines
-            "Cute" -> PickupLinesData.cuteLines
-            "Clever" -> PickupLinesData.cleverLines
-            "Dirty" -> PickupLinesData.dirtyLines
-            "Food" -> PickupLinesData.foodLines
-            "Cheesy" -> PickupLinesData.cheesyLines
-            "Funny" -> PickupLinesData.funnyLines
-            "Romantic" -> PickupLinesData.romanticLines
-            "Sad" -> PickupLinesData.sadLines
-            "Flirty" -> PickupLinesData.flirtyLines
+            "Dreadful" -> PickupLinesData.badLines
+            "Romance" -> PickupLinesData.loveLines
+            "Endearing" -> PickupLinesData.cuteLines
+            "Witty" -> PickupLinesData.cleverLines
+            "Smutty" -> PickupLinesData.dirtyLines
+            "Cuisine" -> PickupLinesData.foodLines
+            "Corny" -> PickupLinesData.cheesyLines
+            "Comical" -> PickupLinesData.funnyLines
+            "Affectionate" -> PickupLinesData.romanticLines
+            "Gloomy" -> PickupLinesData.sadLines
+            "Seductive" -> PickupLinesData.flirtyLines
+            "Classic" -> PickupLinesData.classicLines
+            "Compliment" -> PickupLinesData.complimentLines
+            "Attraction" -> PickupLinesData.attraction
             else -> emptyList()
         }
     }

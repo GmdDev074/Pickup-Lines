@@ -26,6 +26,8 @@ import com.google.android.gms.ads.AdLoader
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.LoadAdError
+import com.google.android.gms.ads.interstitial.InterstitialAd
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.android.gms.ads.nativead.NativeAd
 import com.google.android.gms.ads.rewarded.RewardedAd
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
@@ -44,7 +46,15 @@ class PickupLineAdapter(
 
     private val likedPickupLines: MutableList<String> = mutableListOf()
     private val sharedPreferences: SharedPreferences = context.getSharedPreferences("LikedPickupLines", Context.MODE_PRIVATE)
-    private val adUnitId = "ca-app-pub-3940256099942544/2247696110"
+    private val nativeAdUnitId: String = context.getString(R.string.native_ad_unit_id)
+    private val rewardAdUnitId: String = context.getString(R.string.rewarded_ad_unit_id)
+    private val interstitialAdUnitId: String = context.getString(R.string.interstitial_ad_unit_id)
+    private var interstitialAd: InterstitialAd? = null
+    private var clickCounter = 0
+
+    init {
+        loadInterstitialAd()  // Load Ad when Adapter initializes
+    }
 
     private val backgroundImages = listOf(
         R.drawable.img1, R.drawable.img2, R.drawable.img3, R.drawable.img4,
@@ -93,7 +103,7 @@ class PickupLineAdapter(
                 .centerCrop()
                 .into(holder.cardViewBackground)
 
-            var clickCounter: Int = 0
+            //var clickCounter: Int = 0
 
             holder.itemView.setOnClickListener {
                 holder.itemView.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
@@ -101,22 +111,20 @@ class PickupLineAdapter(
                 clickCounter++
 
                 if (clickCounter % 4 == 0) {
+                    showInterstitialAd()  // Show ad after every 4 clicks
+                }
+
+                // Apply Background & Color Change Logic
+                if (clickCounter % 4 == 0) {
                     val randomImageUrl = backgroundImages[Random.nextInt(backgroundImages.size)]
-                    Glide.with(context)
-                        .load(randomImageUrl)
-                        .centerCrop()
-                        .into(holder.cardViewBackground)
+                    Glide.with(context).load(randomImageUrl).centerCrop().into(holder.cardViewBackground)
 
                     holder.cardViewBackground.visibility = View.VISIBLE
-
                     val randomColor = textColors[Random.nextInt(textColors.size)]
                     holder.constraintLayout.setBackgroundColor(ContextCompat.getColor(context, randomColor))
                 } else if (clickCounter % 2 == 0) {
                     val randomImageUrl = backgroundImages[Random.nextInt(backgroundImages.size)]
-                    Glide.with(context)
-                        .load(randomImageUrl)
-                        .centerCrop()
-                        .into(holder.cardViewBackground)
+                    Glide.with(context).load(randomImageUrl).centerCrop().into(holder.cardViewBackground)
 
                     holder.cardViewBackground.visibility = View.VISIBLE
                     holder.constraintLayout.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent))
@@ -218,7 +226,7 @@ class PickupLineAdapter(
                 copyPickupLine(pickupLine.line)
             }
         } else if (holder is NativeAdViewHolder) {
-            holder.loadNativeAd(context, adUnitId)
+            holder.loadNativeAd(context, nativeAdUnitId)
         }
     }
 
@@ -300,7 +308,7 @@ class PickupLineAdapter(
         txtAppName.visibility = View.GONE
         val rewardedAd = RewardedAd.load(
             context,
-            "ca-app-pub-3940256099942544/5224354917",
+            rewardAdUnitId,
             AdRequest.Builder().build(),
             object : RewardedAdLoadCallback() {
                 override fun onAdLoaded(ad: RewardedAd) {
@@ -396,4 +404,34 @@ class PickupLineAdapter(
             }
         }
     }
+
+
+    // Load Interstitial Ad
+    private fun loadInterstitialAd() {
+        val adRequest = AdRequest.Builder().build()
+        InterstitialAd.load(
+            context,
+            interstitialAdUnitId,
+            adRequest,
+            object : InterstitialAdLoadCallback() {
+                override fun onAdLoaded(ad: InterstitialAd) {
+                    interstitialAd = ad
+                }
+
+                override fun onAdFailedToLoad(error: LoadAdError) {
+                    interstitialAd = null
+                }
+            }
+        )
+    }
+
+    // Show Interstitial Ad
+    private fun showInterstitialAd() {
+        if (interstitialAd != null) {
+            interstitialAd?.show(context as Activity)
+            interstitialAd = null  // Reset ad after showing
+            loadInterstitialAd()    // Load a new ad
+        }
+    }
+
 }

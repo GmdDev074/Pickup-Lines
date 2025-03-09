@@ -60,11 +60,12 @@
                 android:textColor="@android:color/darker_gray"
                 android:textSize="14sp" />
 
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/ad_call_to_action"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="20dp"
+                android:background="@drawable/round_edit"
                 android:backgroundTint="@color/color3"
                 android:textColor="@android:color/white" />
 

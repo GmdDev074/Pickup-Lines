@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
@@ -40,10 +41,21 @@ class TypeAdapter(
         holder.txtType.text = type.typeName
         holder.imgType.setImageResource(type.imageResId)
 
-        type.colorResId?.let {
+       /* type.colorResId?.let {
             val color = ContextCompat.getColor(context, it)
             holder.itemView.setBackgroundColor(color)
+        }*/
+
+        type.colorResId?.let { colorResId ->
+            val color = ContextCompat.getColor(context, colorResId)
+
+            // Set CardView's card background color
+            holder.itemCard.setCardBackgroundColor(color)
+
+            // If you need a drawable background, wrap the inner layout and apply background there
+            holder.itemCard.findViewById<LinearLayout>(R.id.linearLayout).setBackgroundResource(R.drawable.rounded_background)
         }
+
 
         holder.itemView.setOnClickListener {
             clickCounts++
@@ -123,5 +135,6 @@ class TypeAdapter(
     class TypeViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val txtType: TextView = itemView.findViewById(R.id.txtType)
         val imgType: ImageView = itemView.findViewById(R.id.imgType)
+        val itemCard: androidx.cardview.widget.CardView = itemView.findViewById(R.id.itemCard)
     }
 }
